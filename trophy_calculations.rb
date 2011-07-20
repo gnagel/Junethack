@@ -15,11 +15,11 @@ def get_last_games(condition={}, limit=10)
 end
 
 # This one returns users ordered by the number of ascensions they have
-def most_ascensions_users(user=nil, limit=10)
+def most_ascensions_users(user=nil)
     if user then
-      repository.adapter.select "select count(1) as ascensions, (select name from users where id=user_id) as name from games where death='ascended' and user_id = ? group by user_id order by count(1) desc limit ?;", user, limit
+      repository.adapter.select "select count(1) as ascensions, (select name from users where id=user_id) as name from games where death='ascended' and user_id = ? group by user_id order by count(1) desc;", user
     else
-      repository.adapter.select "select count(1) as ascensions, (select name from users where id=user_id) as name from games where death='ascended' and user_id is not null group by user_id order by count(1) desc limit ?;", limit
+      repository.adapter.select "select count(1) as ascensions, (select name from users where id=user_id) as name from games where death='ascended' and user_id is not null group by user_id order by count(1) desc;"
     end
 end
 
@@ -186,7 +186,7 @@ def update_scores(game)
                 Scoreentry.create(:user_id => e.user_id,
                                   :variant => game.version,
                                   :value   => e.duration.to_s,
-                                  :value_display => parse_milliseconds(e.duration),
+                                  :value_display => parse_seconds(e.duration),
                                   :endtime => e.endtime,
                                   :trophy  => "fastest_ascension_realtime",
                                   :icon    => "c-fastest-realtime.png").save
