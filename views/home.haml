@@ -126,7 +126,7 @@
                         - for acc in clanless_accs
                             %option{:value => acc.server.id}= "#{acc.name} on #{acc.server.name}"
 
-                    %label{:for => "clanname"} Clan name
+                    %label{:for => "clanname"} Clan name (only a-z, A-Z, 0-9 and _ allowed)
                     %input#clanname{:name => "clanname", :type => "text"}
                     %input{:type => "submit", :value => "Create clan"}
                     %span#end_of_content_spacer.clear

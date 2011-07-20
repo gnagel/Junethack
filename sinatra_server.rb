@@ -160,6 +160,10 @@ post "/add_server_account" do
     end
     begin
         account = Account.create(:user => User.get(session['user_id']), :server => server, :name => params[:user], :verified => true)
+        if @user.clan
+            account.clan = Clan.first(:name => @user.clan)
+            account.save
+        end
     rescue
         session['errors'].push(*account.errors)
     end
@@ -243,16 +247,20 @@ post "/clan" do
         begin
             clan = Clan.create(:name => params[:clanname], :admin => [acc.user.id, acc.server.id])
         rescue
-            session['errors'].push(*clan.errors)
+            session['errors'].push($!)
             redirect "/home" and return
         end
-        acc.clan = clan
-        acc.save
-        @user.clan = clan.name
-        @user.save
-        session['messages'] << "Successfully created clan #{params[:clanname]}"
-        puts CGI.escape(acc.clan.name)
-        redirect "/clan/" + CGI.escape(acc.clan.name)
+        if clan.id
+            acc.clan = clan
+            acc.save
+            @user.clan = clan.name
+            @user.save
+            session['messages'] << "Successfully created clan #{params[:clanname]}"
+            puts CGI.escape(acc.clan.name)
+            redirect "/clan/" + CGI.escape(acc.clan.name)
+        else
+            session['errors'].push(*clan.errors)
+        end
     else 
         session['errors'] << "Could not find your account on this server"
         redirect "/home"
